@@ -84,28 +84,62 @@
         }
 
         main {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 0;
         }
 
         .hero-section {
+            position: relative;
+            height: 60vh;
+            background: url('https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&h=600&fit=crop') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             text-align: center;
-            margin-bottom: 3rem;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 105, 180, 0.4);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero-title {
-            font-size: 3rem;
-            color: #ff69b4;
+            font-size: 4rem;
             margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             animation: slideInDown 1s ease-out;
         }
 
         .hero-subtitle {
-            font-size: 1.2rem;
-            color: #666;
+            font-size: 1.5rem;
             margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
             animation: slideInUp 1s ease-out;
+        }
+
+        .products-section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes slideInDown {
@@ -273,23 +307,35 @@
             position: relative;
         }
 
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
+            @media (max-width: 768px) {
+                .hero-title {
+                    font-size: 2.5rem;
+                }
+                
+                .hero-subtitle {
+                    font-size: 1.2rem;
+                }
+                
+                .hero-section {
+                    height: 40vh;
+                }
             
-            .hero-title {
-                font-size: 2rem;
+                h1 {
+                    font-size: 2rem;
+                }
+                
+                .section-title {
+                    font-size: 2rem;
+                }
+                
+                .header-right {
+                    gap: 1rem;
+                }
+                
+                .products-section {
+                    padding: 2rem 1rem;
+                }
             }
-            
-            .header-right {
-                gap: 1rem;
-            }
-            
-            main {
-                padding: 1rem;
-            }
-        }
     </style>
 </head>
 <body>
@@ -306,11 +352,15 @@
 
     <main>
         <div class="hero-section">
-            <h2 class="hero-title">¡Las Cookies Más Deliciosas!</h2>
-            <p class="hero-subtitle">Horneadas con amor y los mejores ingredientes</p>
+            <div class="hero-content">
+                <h2 class="hero-title">¡Las Cookies Más Deliciosas!</h2>
+                <p class="hero-subtitle">Horneadas con amor y los mejores ingredientes</p>
+            </div>
         </div>
 
-        <div class="cookie-showcase">
+        <div class="products-section">
+            <h2 class="section-title">Nuestros Productos</h2>
+            <div class="cookie-showcase">
             <div class="cookie-card">
                 <img src="https://www.tastingtable.com/img/gallery/are-crumbl-cookies-supposed-to-be-slightly-undercooked/intro-1727384404.jpg" alt="Classic Chocolate Chip" class="cookie-image">
                 <h3 class="cookie-name">Classic Chocolate Chip</h3>
@@ -351,6 +401,7 @@
                 <h3 class="cookie-name">Red Velvet</h3>
                 <p class="cookie-price">$4.25</p>
                 <button class="add-to-cart" onclick="addToCart('Red Velvet', 4.25)">Agregar al Carrito</button>
+            </div>
             </div>
         </div>
 
