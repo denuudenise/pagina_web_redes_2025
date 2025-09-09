@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛒 Carrito - Crumbel Cookies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(255, 192, 203, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        h1 {
+            color: #ff69b4;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 105, 180, 0.6);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .cart-title {
+            text-align: center;
+            color: #ff69b4;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            to {
+                text-shadow: 2px 2px 4px rgba(255, 105, 180, 0.3);
+            }
+        }
+
+        .cart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(255, 192, 203, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr auto auto auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            background: rgba(255, 192, 203, 0.1);
+            border-radius: 10px;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-info h3 {
+            color: #ff69b4;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .item-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 0.25rem;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            background: #ff69b4;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #ff1493;
+            transform: scale(1.1);
+        }
+
+        .quantity-display {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .remove-btn {
+            background: linear-gradient(45deg, #ff4d6d, #dc3545);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .remove-btn:hover {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            transform: translateY(-2px);
+        }
+
+        .cart-summary {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .total-row {
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+            padding-top: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: white;
+            color: #ff69b4;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .checkout-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-cart h2 {
+            color: #ff69b4;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .shop-btn {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .shop-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .cart-item {
+                grid-template-columns: 80px 1fr;
+                gap: 0.5rem;
+                text-align: center;
+            }
+
+            .item-price,
+            .quantity-controls,
+            .remove-btn {
+                grid-column: 1 / -1;
+                justify-self: center;
+                margin-top: 0.5rem;
+            }
+
+            .cart-title {
+                font-size: 2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🍪 Nicky Pasteleria</h1>
+        <a href="inicio.php" class="back-btn">← Volver a la Tienda</a>
+    </header>
+
+    <main>
+        <h2 class="cart-title">🛒 Tu Carrito</h2>
+
+        <!-- Carrito con productos -->
+        <div id="cart-with-items">
+            <div class="cart-container">
+                <div class="cart-item">
+                    <img src="https://www.tastingtable.com/img/gallery/are-crumbl-cookies-supposed-to-be-slightly-undercooked/intro-1727384404.jpg" alt="Classic Chocolate Chip" class="item-image">
+                    <div class="item-info">
+                        <h3>Classic Chocolate Chip</h3>
+                        <p>Deliciosas cookies con chispas de chocolate</p>
+                    </div>
+                    <div class="item-price">$3.50</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('item1', -1)">-</button>
+                        <span class="quantity-display" id="qty-item1">2</span>
+                        <button class="quantity-btn" onclick="updateQuantity('item1', 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeItem('item1')">🗑️ Eliminar</button>
+                </div>
+
+                <div class="cart-item">
+                    <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=300&fit=crop" alt="Double Fudge Brownie" class="item-image">
+                    <div class="item-info">
+                        <h3>Double Fudge Brownie</h3>
+                        <p>Cookies de chocolate intenso tipo brownie</p>
+                    </div>
+                    <div class="item-price">$4.00</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('item2', -1)">-</button>
+                        <span class="quantity-display" id="qty-item2">1</span>
+                        <button class="quantity-btn" onclick="updateQuantity('item2', 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeItem('item2')">🗑️ Eliminar</button>
+                </div>
+
+                <div class="cart-item">
+                    <img src="https://www.cookingclassy.com/wp-content/uploads/2020/02/soft-sugar-cookies-5.jpg" alt="Sugar Cookie" class="item-image">
+                    <div class="item-info">
+                        <h3>Sugar Cookie</h3>
+                        <p>Cookies de azúcar tradicionales</p>
+                    </div>
+                    <div class="item-price">$3.00</div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity('item3', -1)">-</button>
+                        <span class="quantity-display" id="qty-item3">3</span>
+                        <button class="quantity-btn" onclick="updateQuantity('item3', 1)">+</button>
+                    </div>
+                    <button class="remove-btn" onclick="removeItem('item3')">🗑️ Eliminar</button>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">$20.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Envío:</span>
+                    <span id="shipping">$5.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Descuentos:</span>
+                    <span id="discount">-$0.00</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total:</span>
+                    <span id="total">$25.00</span>
+                </div>
+                <button class="checkout-btn" onclick="proceedToCheckout()">
+                    ✨ Proceder al Pago
+                </button>
+            </div>
+        </div>
+
+        <!-- Carrito vacío -->
+        <div id="empty-cart" class="cart-container empty-cart" style="display: none;">
+            <h2>Tu carrito está vacío 🛒</h2>
+            <p>¡Agrega algunas deliciosas cookies para comenzar!</p>
+            <a href="inicio.php" class="shop-btn">🍪 Explorar Productos</a>
+        </div>
+    </main>
+
+    <div class="notification" id="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // Carrito en memoria
+        let cartItems = {
+            item1: { name: 'Classic Chocolate Chip', price: 3.50, quantity: 2, image: 'https://www.tastingtable.com/img/gallery/are-crumbl-cookies-supposed-to-be-slightly-undercooked/intro-1727384404.jpg' },
+            item2: { name: 'Double Fudge Brownie', price: 4.00, quantity: 1, image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=300&fit=crop' },
+            item3: { name: 'Sugar Cookie', price: 3.00, quantity: 3, image: 'https://www.cookingclassy.com/wp-content/uploads/2020/02/soft-sugar-cookies-5.jpg' }
+        };
+
+        function updateQuantity(itemId, change) {
+            const item = cartItems[itemId];
+            if (!item) return;
+
+            item.quantity += change;
+            
+            if (item.quantity <= 0) {
+                removeItem(itemId);
+                return;
+            }
+
+            document.getElementById(`qty-${itemId}`).textContent = item.quantity;
+            updateCartSummary();
+            showNotification(`Cantidad actualizada: ${item.name}`);
+        }
+
+        function removeItem(itemId) {
+            const item = cartItems[itemId];
+            if (!item) return;
+
+            const itemElement = document.getElementById(`qty-${itemId}`).closest('.cart-item');
+            itemElement.style.transform = 'translateX(-100%)';
+            itemElement.style.opacity = '0';
+
+            setTimeout(() => {
+                delete cartItems[itemId];
+                itemElement.remove();
+                updateCartSummary();
+                checkIfCartEmpty();
+                showNotification(`${item.name} eliminado del carrito`);
+            }, 300);
+        }
+
+        function updateCartSummary() {
+            let subtotal = 0;
+            
+            Object.values(cartItems).forEach(item => {
+                subtotal += item.price * item.quantity;
+            });
+
+            const shipping = subtotal > 0 ? 5.00 : 0.00;
+            const discount = 0.00;
+            const total = subtotal + shipping - discount;
+
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('shipping').textContent = `$${shipping.toFixed(2)}`;
+            document.getElementById('discount').textContent = `-$${discount.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function checkIfCartEmpty() {
+            const isEmpty = Object.keys(cartItems).length === 0;
+            
+            if (isEmpty) {
+                document.getElementById('cart-with-items').style.display = 'none';
+                document.getElementById('empty-cart').style.display = 'block';
+            }
+        }
+
+        function proceedToCheckout() {
+            if (Object.keys(cartItems).length === 0) {
+                showNotification('Tu carrito está vacío');
+                return;
+            }
+
+            showNotification('Redirigiendo al checkout...');
+            setTimeout(() => {
+                // Aquí redirigiría al checkout real
+                alert('¡Funcionalidad de pago próximamente! 🚀');
+            }, 1000);
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Inicializar el carrito
+        updateCartSummary();
+    </script>
+</body>
+</html>
