@@ -4,8 +4,8 @@ session_start();
 // Configuración de la base de datos
 class Database {
     private $servidor = "localhost";
-    private $usuario = "root";
-    private $password = "";
+    private $usuario = "phpmyadmin";
+    private $password = "RedesInformaticas";
     private $base_datos = "crumbel_cookies";
     private $conexion;
 

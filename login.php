@@ -2,7 +2,7 @@
 session_start();
 
 // Conexión a la base de datos
-$conexion = new mysqli("localhost", "root", "", "crumbel_cookies");
+$conexion = new mysqli("localhost", "phpmyadmin", "RedesInformaticas", "crumbel_cookies");
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
 }
