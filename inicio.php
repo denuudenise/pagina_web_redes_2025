@@ -42,11 +42,21 @@ if (isset($_POST['id_producto'])) {
     $stmt->close();
 }
 
+// Cerrar sesión si se solicita
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: inicio.php");
+    exit();
+}
+
 // Contador carrito
 $cartCount = 0;
 foreach ($_SESSION['carrito'] as $item) {
     $cartCount += $item['cantidad'];
 }
+
+// Verificar si hay sesión activa
+$usuarioLogueado = isset($_SESSION['id_cliente']) && isset($_SESSION['nombre_cliente']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -102,6 +112,40 @@ foreach ($_SESSION['carrito'] as $item) {
             display: flex;
             align-items: center;
             gap: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .user-name {
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .logout-btn {
+            background: white;
+            color: #ff69b4;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
         }
 
         .login-btn {
@@ -292,6 +336,14 @@ foreach ($_SESSION['carrito'] as $item) {
             .header-right {
                 gap: 1rem;
             }
+
+            .user-info {
+                padding: 0.5rem 1rem;
+            }
+
+            .user-name {
+                font-size: 0.9rem;
+            }
             
             .products-section {
                 padding: 2rem 1rem;
@@ -303,7 +355,17 @@ foreach ($_SESSION['carrito'] as $item) {
     <header>
         <h1>🍪 Crumbel Cookies</h1>
         <div class="header-right">
-            <a href="login.php" class="login-btn">Login</a>
+            <?php if ($usuarioLogueado): ?>
+                <!-- Usuario logueado -->
+                <div class="user-info">
+                    <span class="user-name">👤 <?= htmlspecialchars($_SESSION['nombre_cliente']) ?></span>
+                    <a href="?logout=1" class="logout-btn">Cerrar Sesión</a>
+                </div>
+            <?php else: ?>
+                <!-- No hay sesión -->
+                <a href="login.php" class="login-btn">Login</a>
+            <?php endif; ?>
+            
             <div class="cart-container">
                 <a href="carrito.php">
                     <img src="https://cdn-icons-png.flaticon.com/512/5412/5412512.png" id="carrito">
