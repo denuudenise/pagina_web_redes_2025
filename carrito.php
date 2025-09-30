@@ -489,6 +489,153 @@ $totales = calcularTotales();
             transform: translateX(0);
         }
 
+        /* Modal de pago */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.4);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h3 {
+            color: #ff69b4;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .payment-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-option {
+            background: linear-gradient(135deg, #ffc0cb 0%, #ffffff 100%);
+            border: 3px solid transparent;
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .payment-option:hover {
+            border-color: #ff69b4;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+        }
+
+        .payment-option.selected {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            border-color: #ff1493;
+            color: white;
+        }
+
+        .payment-icon {
+            font-size: 2.5rem;
+        }
+
+        .payment-info h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .payment-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .payment-option.selected .payment-info h4,
+        .payment-option.selected .payment-info p {
+            color: white;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .cancel-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .confirm-btn {
+            background: linear-gradient(45deg, #ff69b4, #ff1493);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) {
             .cart-item {
                 grid-template-columns: 80px 1fr;
@@ -519,7 +666,6 @@ $totales = calcularTotales();
         <h2 class="cart-title">🛒 Tu Carrito</h2>
 
         <?php if (!empty($_SESSION['carrito'])): ?>
-        <!-- Carrito con productos -->
         <div id="cart-with-items">
             <div class="cart-container">
                 <?php foreach ($_SESSION['carrito'] as $id_producto => $item): ?>
@@ -561,7 +707,6 @@ $totales = calcularTotales();
             </div>
         </div>
         <?php else: ?>
-        <!-- Carrito vacío -->
         <div class="cart-container empty-cart">
             <h2>Tu carrito está vacío 🛒</h2>
             <p>¡Agrega algunas deliciosas cookies para comenzar!</p>
@@ -574,7 +719,43 @@ $totales = calcularTotales();
         <span id="notification-text"></span>
     </div>
 
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💳 Método de Pago</h3>
+                <p>Selecciona cómo deseas pagar tu pedido</p>
+            </div>
+            
+            <div class="payment-options">
+                <div class="payment-option" onclick="selectPaymentMethod('Efectivo')" data-method="Efectivo">
+                    <div class="payment-icon">💵</div>
+                    <div class="payment-info">
+                        <h4>Efectivo</h4>
+                        <p>Paga al recibir tu pedido</p>
+                    </div>
+                </div>
+                
+                <div class="payment-option" onclick="selectPaymentMethod('Tarjeta')" data-method="Tarjeta">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-info">
+                        <h4>Tarjeta</h4>
+                        <p>Débito o crédito</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn cancel-btn" onclick="closePaymentModal()">Cancelar</button>
+                <button class="modal-btn confirm-btn" id="confirmPaymentBtn" onclick="confirmPayment()" disabled>
+                    Confirmar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let selectedPaymentMethod = null;
+
         function updateQuantity(idProducto, change) {
             const currentQty = parseInt(document.querySelector(`[data-id="${idProducto}"] .quantity-display`).textContent);
             const newQty = currentQty + change;
@@ -594,7 +775,7 @@ $totales = calcularTotales();
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload(); // Recargar para actualizar totales
+                    location.reload();
                 } else {
                     showNotification(data.message || 'Error al actualizar');
                 }
@@ -632,27 +813,65 @@ $totales = calcularTotales();
         }
 
         function proceedToCheckout() {
-            const metodoPago = prompt('Método de pago (Efectivo/Tarjeta):') || 'Efectivo';
+            document.getElementById('paymentModal').classList.add('show');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('show');
+            selectedPaymentMethod = null;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('confirmPaymentBtn').disabled = true;
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            document.querySelector(`[data-method="${method}"]`).classList.add('selected');
+            
+            document.getElementById('confirmPaymentBtn').disabled = false;
+        }
+
+        function confirmPayment() {
+            if (!selectedPaymentMethod) {
+                showNotification('Por favor selecciona un método de pago');
+                return;
+            }
+            
+            document.getElementById('confirmPaymentBtn').disabled = true;
+            document.getElementById('confirmPaymentBtn').textContent = 'Procesando...';
             
             fetch('carrito.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `action=confirmar&metodo_pago=${metodoPago}`
+                body: `action=confirmar&metodo_pago=${selectedPaymentMethod}`
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(`¡Pedido confirmado exitosamente! ID del pedido: ${data.id_pedido}`);
-                    location.reload();
+                    closePaymentModal();
+                    showNotification(`¡Pedido confirmado! ID: ${data.id_pedido}`);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 } else {
                     showNotification(data.message || 'Error al confirmar pedido');
+                    document.getElementById('confirmPaymentBtn').disabled = false;
+                    document.getElementById('confirmPaymentBtn').textContent = 'Confirmar Pedido';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 showNotification('Error al procesar el pedido');
+                document.getElementById('confirmPaymentBtn').disabled = false;
+                document.getElementById('confirmPaymentBtn').textContent = 'Confirmar Pedido';
             });
         }
 
